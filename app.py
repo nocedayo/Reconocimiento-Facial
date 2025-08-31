@@ -59,14 +59,14 @@ while True:
             hora_actual = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             with open("registro.txt", "a") as f:
                 f.write(f"{nombre_detectado}-{hora_actual}\n")
-                
-        #Guardar la foto del rostro reconocido
-        nombre_archivo = f"noregistrado_{hora_actual}.jpg"
-        ruta_archivo = os.path.join(carpeta_capturas, nombre_archivo)
-        cv2.imwrite(ruta_archivo, frame)  # Guarda todo el frame
-        #cv2.imwrite(ruta_archivo, rostro)  # Guarda solo el rostro recortado
-        #Dibujar rectángulo y texto
-        color = (0, 255, 0) if nombre_detectado != "Desconocido" else (0, 0, 255)
+        else:
+            #Guardar la foto del rostro reconocido
+           nombre_archivo = f"noregistrado_{hora_actual}.jpg"
+           ruta_archivo = os.path.join(carpeta_capturas, nombre_archivo)
+           cv2.imwrite(ruta_archivo, frame)  # Guarda todo el frame
+           #cv2.imwrite(ruta_archivo, rostro)  # Guarda solo el rostro recortado
+          #Dibujar rectángulo y texto
+        color = (0, 255, 0)  if nombre_detectado != "Desconocido" else (0, 0, 255)
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
         cv2.putText(frame, nombre_detectado, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
         cam.release()
