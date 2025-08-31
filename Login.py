@@ -25,7 +25,7 @@ ventana.geometry(f'{ancho_ventana}x{alto_ventana}+{x}+{y}')
 etiqueta.pack(pady=20)
 
 def al_hacer_clic():
-    messagebox.showinfo("ATENTO","Asegurate de tener la camara conectada y presiona aceptar")
+    messagebox.showinfo("ATENTO","Asegurate de posicionarte frente a la camara ")
     os.system("python app.py")   
     
 boton = tk.Button(ventana, text="Ingresar", command=al_hacer_clic)
