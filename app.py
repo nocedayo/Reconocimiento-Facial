@@ -3,14 +3,16 @@ import os
 import face_recognition
 from datetime import datetime
 import csv
-
+import tkinter as tk
+from tkinter import messagebox 
 # --- Carpeta de referencia ---
 carpeta_fotos = "data"
 codificaciones_conocidas = []
 nombres_referencia = []
 # Carpeta donde guardar las capturas
 carpeta_capturas = "capturas"
-os.makedirs(carpeta_capturas, exist_ok=True)    
+os.makedirs(carpeta_capturas, exist_ok=True)   
+ventana_camara= tk.Tk() 
 
 # Cargar las codificaciones de las caras de referencia
 for archivo in os.listdir(carpeta_fotos):
@@ -26,6 +28,7 @@ for archivo in os.listdir(carpeta_fotos):
 
 # --- Encender cámara ---
 cam = cv2.VideoCapture(0)
+hora_actual = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 while True:
     ret, frame = cam.read()
@@ -42,10 +45,7 @@ while True:
     # Comparar las codificaciones del frame con las de referencia
     for codificacion_cara, ubicacion_cara in zip(codificaciones_caras, ubicaciones_caras):
         coincidencias = face_recognition.compare_faces(codificaciones_conocidas, codificacion_cara)
-        nombre_detectado = "Desconocido"
-      
-
-        
+        nombre_detectado = "Desconocido"     
         if True in coincidencias:
             primer_coincidencia_indice = coincidencias.index(True)
             nombre_detectado = nombres_referencia[primer_coincidencia_indice]
@@ -59,25 +59,23 @@ while True:
             hora_actual = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
             with open("registro.txt", "a") as f:
                 f.write(f"{nombre_detectado}-{hora_actual}\n")
-
-            # Guardar la foto del rostro reconocido
-            nombre_archivo = f"{nombre_detectado}_{hora_actual}.jpg"
-            ruta_archivo = os.path.join(carpeta_capturas, nombre_archivo)
-            cv2.imwrite(ruta_archivo, frame)  # Guarda todo el frame
-            #cv2.imwrite(ruta_archivo, rostro)  # Guarda solo el rostro recortado
-
-
-        # Dibujar rectángulo y texto
+                
+        #Guardar la foto del rostro reconocido
+        nombre_archivo = f"noregistrado_{hora_actual}.jpg"
+        ruta_archivo = os.path.join(carpeta_capturas, nombre_archivo)
+        cv2.imwrite(ruta_archivo, frame)  # Guarda todo el frame
+        #cv2.imwrite(ruta_archivo, rostro)  # Guarda solo el rostro recortado
+        #Dibujar rectángulo y texto
         color = (0, 255, 0) if nombre_detectado != "Desconocido" else (0, 0, 255)
-
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
         cv2.putText(frame, nombre_detectado, (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
-
-    # Mostrar la ventana
+        cam.release()
+        cv2.destroyAllWindows()
+           
     cv2.imshow("Reconocimiento Facial", frame)
 
     if cv2.waitKey(1) & 0xFF == ord('e'):
-        break
+       break
 
 cam.release()
 cv2.destroyAllWindows()
